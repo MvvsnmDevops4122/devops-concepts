@@ -80,8 +80,11 @@ Ansible automates the following tasks on all 100 servers:
 
 Modules:
 
-1. ansible.builtin.ping --> ping
-1. package
+1. ansible.builtin.ping --> ping (Check connectivity)
+2. ansible.builtin.dnf  --> dnf (Manages packages on DNF-based Linux distributions.)
+3. ansible.builtin.debug --> debug ( Display output)
+4. package → Manages packages across different Linux distributions using the appropriate package manager.
+5. service → Ansible module to manage services
 
 
 ## What are Ansible Ad-hoc Commands?
@@ -160,7 +163,7 @@ EX: ansible all -i inventory.ini -m ping -e "ansible_user=ec2-user" -e "ansible_
 Inventory file (inventory.ini):
 
   [web]  # Group name
-  
+
   172.31.46.125 ansible_user=ec2-user ansible_password=YOUR_PASSWORD
 
 Ansible command: `ansible 172.31.46.125 -i inventory.ini -m ping -b`
@@ -173,12 +176,49 @@ An Ansible Playbook is a YAML file that contains a set of instructions (tasks) t
 - `ansible-playbook` is a command-line tool(command) used to execute Ansible Playbooks.
 - Keep all repeated modules into file called playbook.
 
+ Refer yaml: from `learn-ansible` repositor
+ 
+
+ ## Gathering facts
+
+ Gathering facts is tthe process of collecting system information from managed nodes before executing playbook tasks
+
+ - ansible_facts is a special variable in Ansible.
+
+ Keyword: ansible_facts
+
+ Example: OS name, IP address, hostname, memory and CPU details.
 
 
+## Variables:
 
+- Ansible variables are used to store values and reuse them dynamically in playbooks.
 
+# Variable-related keywords:
 
+  vars → Defines variables at play or task level.
+  vars_files → Loads variables from an external file.
+  vars_prompt → Takes arguments from CLI during playbook execution.
 
+  # group_vars
+
+ - group_vars is a special Ansible directory.
+ - Ansible automatically loads matching group variables.
+ - The filename must match the inventory group name.(EX: mongodb=mongodb.yaml)
+ - The directory should be in an Ansible-supported location, such as the playbook directory or inventory directory.
+  
+# Variable Precedence
+
+  Variable precedence determines which value Ansible uses when the same variable is defined in multiple places.
+
+# Highest to lowest priority (simplified):
+
+   1. CMD (-e) → Command-line variables.  # 
+   2. Task → Variables defined at task level.
+   3. vars_files → Variables loaded from external files.
+   4. vars_prompt → Variables entered by the user.
+   5. Play → Variables defined at play level using vars.
+   6. Inventory → Variables defined in inventory files.
 
 
 
