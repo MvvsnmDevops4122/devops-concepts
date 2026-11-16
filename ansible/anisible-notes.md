@@ -109,6 +109,7 @@ EXAMPLES:
 
 - Ansible Inventory is a file that contains the list of servers or hosts that Ansible manages.
 - It helps Ansible identify which servers to connect to and where to execute tasks.
+- Inventory contains hosts, groups and variables.
 
 
 File: inventory.ini
@@ -120,7 +121,56 @@ localhost ansible_connection=local
 - **local** – executes tasks directly on the local machine without SSH.
 - Ansible uses **SSH by default** to connect to remote hosts.
 
+
+# Ansible Inventory Commands
+
+`ansible-inventory -i inventory.ini --graph`  : display all inventory groups and hosts
+`ansible-inventory -i inventory.ini --graph fronted`  : Display only the frontend group
+`ansible-inventory -i inventory.ini --graph ungrouped `: Display only ungrouped hosts
+
+# EXAMPLES:
+
+# 1. Using inventory with a host/group name
+
 EX: ansible local -i inventory.ini -m ping
+
+   - local –-> host or group name defined in inventory.ini.
+
+# 2. Without inventory
+
+EX: ansible 172.31.46.125, -m ping -e "ansible_user=ec2-user" -e "ansible_password=YOUR_PASSWORD" -b
+
+   - IP address followed by a comma –-> tells Ansible to use an inline host instead of an inventory file.
+
+# 3. With inventory – using IP address
+
+EX: ansible 172.31.46.125 -i inventory.ini -m ping -e "ansible_user=ec2-user" -e "ansible_password=YOUR_PASSWORD" -b
+
+   - Targets only the specified IP from the inventory.
+
+# 4. With inventory – using all
+
+EX: ansible all -i inventory.ini -m ping -e "ansible_user=ec2-user" -e "ansible_password=YOUR_PASSWORD" -b
+
+   - all –-> targets every host in the inventory.
+
+
+# Variables in Ansible Inventory
+
+Inventory file (inventory.ini):
+
+  [web]  # Group name
+  172.31.46.125 ansible_user=ec2-user ansible_password=YOUR_PASSWORD
+
+Ansible command: `ansible 172.31.46.125 -i inventory.ini -m ping -b`
+
+
+## What is an Ansible Playbook?
+
+An Ansible Playbook is a YAML file that contains a set of instructions (tasks) to automate server configuration and application deployment.
+
+- `ansible-playbook` is a command-line tool(command) used to execute Ansible Playbooks.
+
 
 
 
