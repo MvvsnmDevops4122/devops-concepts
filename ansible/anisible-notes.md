@@ -160,6 +160,7 @@ EX: ansible all -i inventory.ini -m ping -e "ansible_user=ec2-user" -e "ansible_
 Inventory file (inventory.ini):
 
   [web]  # Group name
+  
   172.31.46.125 ansible_user=ec2-user ansible_password=YOUR_PASSWORD
 
 Ansible command: `ansible 172.31.46.125 -i inventory.ini -m ping -b`
@@ -170,6 +171,7 @@ Ansible command: `ansible 172.31.46.125 -i inventory.ini -m ping -b`
 An Ansible Playbook is a YAML file that contains a set of instructions (tasks) to automate server configuration and application deployment.
 
 - `ansible-playbook` is a command-line tool(command) used to execute Ansible Playbooks.
+- Keep all repeated modules into file called playbook.
 
 
 
