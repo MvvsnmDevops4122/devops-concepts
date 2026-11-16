@@ -439,3 +439,61 @@ If no other configuration file is available, Ansible uses this file.
 ``` bash
 ansible --version
 ```
+
+# Ansible Data Types
+
+Ansible supports the following data types:
+
+- **Strings**
+- **Numbers**
+- **Booleans**
+- **Lists**
+- **Dictionaries**
+
+**Note:** The `type_debug` filter is used to identify and print the data type of each variable.
+
+**Refer:** `13-datatypes.yaml`
+
+### 1. String
+
+```yaml
+name: Satya
+city: "Hyderabad"
+```
+
+### 2. Integer
+
+```yaml
+age: 25
+port: 8080
+```
+
+### 3. Float
+
+```yaml
+percentage: 85.5
+```
+
+### 4. Boolean
+
+```yaml
+install_nginx: true
+```
+
+### 5. List
+
+```yaml
+packages:
+  - nginx
+  - git
+  - docker
+```
+
+### 6. Dictionary
+
+```yaml
+student:
+  name: Satya
+  age: 25
+  city: Hyderabad
+```
