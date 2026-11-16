@@ -1,6 +1,6 @@
 
 # Ansible
-=============
+
 
 ## How Ansible Solves the Challenges of Shell Scripting
 
@@ -70,5 +70,63 @@ Ansible automates the following tasks on all 100 servers:
 7. Creating a systemd service file.
 8. Loading application data.
 9. Starting the application.
+
+
+## What are Ansible Modules?
+
+- Modules are similar to commands in Linux.
+- In Linux, we use commands to perform different tasks. In Ansible, we use modules to perform specific tasks on managed servers.
+- Each module is designed for a particular operation, such as installing packages, creating users or managing services.
+
+Modules:
+
+1. ansible.builtin.ping --> ping
+1. package
+
+
+## What are Ansible Ad-hoc Commands?
+
+- Ansible Ad-hoc commands are one-line commands.
+- They are used to execute a single task quickly on one or more remote servers (managed nodes) without writing a playbook.
+
+
+## Ansible Ad-hoc Commands
+
+EXAMPLES:
+
+1. Check connectivity to the local machine (Ansible control node): ansible localhost -m ping
+
+2. Check connectivity to all managed nodes: ansible all -i inventory -m ping
+
+3. Install Nginx on the local machine: ansible localhost -m dnf -a "name=nginx state=present" -b
+
+- -m – specifies the Ansible module.
+- -a – passes arguments to the module.
+- -b – runs the command with administrator privileges.
+
+
+## What is Ansible Inventory?
+
+- Ansible Inventory is a file that contains the list of servers or hosts that Ansible manages.
+- It helps Ansible identify which servers to connect to and where to execute tasks.
+
+
+File: inventory.ini
+
+[local]
+localhost ansible_connection=local
+
+- ansible_connection is an **Ansible inventory variable** that tells Ansible how to connect to a target host.
+- **local** – executes tasks directly on the local machine without SSH.
+- Ansible uses **SSH by default** to connect to remote hosts.
+
+EX: ansible local -i inventory.ini -m ping
+
+
+
+
+
+
+
 
 
