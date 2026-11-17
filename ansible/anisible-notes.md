@@ -104,6 +104,10 @@ Ansible automates the following tasks on all 100 servers:
     using the appropriate package manager.
 5.  `service` → Ansible module to manage services.
 6.  `user`    → Ansible module to create user.
+7.  `command` → Ansible command module
+8.  `shell` → Ansible shell module
+
+
 
 ## What are Ansible Ad-hoc Commands?
 
