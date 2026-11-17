@@ -861,5 +861,305 @@ The **lineinfile module** is used to add, modify, or remove a specific line in a
 **Remember:** The lineinfile module manages a specific line in a file.
 
 
+### Ansible RabbitMQ User Module
+
+The `community.rabbitmq.rabbitmq_user` module is used to create, update, and delete users in RabbitMQ.
+
+**Example:**
+
+```yaml
+- name: Create RabbitMQ user
+  community.rabbitmq.rabbitmq_user:
+    user: roboshop
+    password: "{{ rabbitmq_password }}"
+    vhost: /
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present
+```
+
+**Important parameters:**
+
+- `user` – RabbitMQ username.
+- `password` – User password.
+- `vhost` – Virtual host.
+- `configure_priv` – Configure permissions.
+- `read_priv` – Read permissions.
+- `write_priv` – Write permissions.
+- `state` – Create or delete the user.
+
+**State values:**
+
+- `present` – Create or update the user.
+- `absent` – Delete the user.
+
+**Remember:** This module helps automate RabbitMQ user and permission management.
+
+
+### Ansible User Module
+
+The **user module** is used to create, modify, and delete users on Linux servers.
+
+**Example:**
+
+```yaml
+- name: Create roboshop system user
+      user:                                # Module to manage Linux users
+        name: roboshop                     # Username to create
+        create_home: false                 # Do not create a home directory
+        home: /app                         # Set the home directory path
+        system: true                       # Create a system-level account(by default false)
+        shell: /sbin/nologin               # Prevent interactive login
+        comment: "roboshop system user"    # Description of the user
+```
+
+**State values:**
+
+- `present` – Create or update the user.
+- `absent` – Delete the user.
+
+**Remember:** The user module manages Linux user accounts.
+
+
+### Ansible File Module
+
+The **file module** is used to create, modify, and delete files, directories, and symbolic links on the target server.
+
+**Example:**
+
+```yaml
+- name: Create application directory
+  file:
+    path: /app             # Directory path
+    state: directory       # Ensure directory exists
+    owner: roboshop        # Directory owner
+    group: roboshop        # Directory group
+    mode: '0755'            # Directory permissions
+```
+
+**Important parameters:**
+
+- `path` – File or directory location.
+- `state` – Specify the required state.
+- `owner` – Set file owner.
+- `group` – Set file group.
+- `mode` – Set file permissions.
+
+**State values:**
+
+- `directory` – Create a directory.
+- `touch` – Create an empty file.
+- `file` – Check whether a file exists.
+- `absent` – Delete a file or directory.
+- `link` – Create a symbolic link.
+
+**Remember:** The file module manages files, directories, and symbolic links.
+
+
+### Ansible Get_url Module
+
+The **get_url module** is used to download files from a URL to the target server.
+
+**Example:**
+
+```yaml
+- name: Download Catalogue source code
+  get_url:
+    url: https://example.com/catalogue.zip  # Download URL
+    dest: /tmp/catalogue.zip                # Destination file path
+```
+
+**Important parameters:**
+
+- `url` – URL of the file to download.
+- `dest` – Destination path on the target server.
+- `mode` – Set file permissions.
+- `owner` – Set file owner.
+- `group` – Set file group.
+
+**Remember:** The get_url module downloads files directly to the target server.
+
+
+### Ansible Unarchive Module
+
+The **unarchive module** is used to extract compressed archive files (ZIP, TAR, etc.) on the target server.
+
+**Example:**
+
+```yaml
+- name: Extract Catalogue source code
+  unarchive:
+    src: /tmp/catalogue.zip   # Source archive file
+    dest: /app                # Destination directory
+    remote_src: true          # Archive file is already on the target server
+```
+
+**Important parameters:**
+
+- `src` – Archive file location.
+- `dest` – Destination directory.
+- `remote_src` – Specifies where the archive file is located.
+
+**remote_src values:**
+
+- `false` (default) – Archive file is on the Ansible Controller.
+- `true` – Archive file is already on the target server.
+
+**Remember:** The unarchive module extracts compressed files into a destination directory.
+
+
+### Ansible NPM Module
+
+The `community.general.npm` module is used to install and manage Node.js application dependencies using npm.
+
+**Example:**
+
+```yaml
+- name: Install npm dependencies
+  community.general.npm:
+    path: /app             # Application directory containing package.json
+    state: present         # Ensure dependencies are installed
+```
+
+**Important parameters:**
+
+- `path` – Application directory containing package.json.
+- `state` – Specify the required state.
+- `name` – Package name to install.
+
+**Remember:** The npm module helps manage Node.js application dependencies.
+
+
+
+### Ansible Template Module
+
+The **template module** is used to copy files from the Ansible Controller to the target server after processing Jinja2 variables.
+
+- Ansible template module copies a Jinja2 template file (.j2) from the Ansible Controller to the target server and converts it into a  normal file after processing the variables.
+
+**Example:**
+
+```yaml
+- name: Copy Catalogue service file
+  template:
+    src: catalogue.service.j2   # Template file on Ansible Controller
+    dest: /etc/systemd/system/catalogue.service  # Destination on target server
+```
+
+**Important parameters:**
+
+- `src` – Source template file location.
+- `dest` – Destination file location on the target server.
+- `owner` – Set file owner.
+- `group` – Set file group.
+- `mode` – Set file permissions.
+
+**Remember:** The template module replaces Jinja2 variables with their values before copying the file to the target server.
+
+
+
+### Ansible Tags
+
+Tags are used to run specific tasks or selected parts of a playbook instead of executing all tasks.
+
+**Example:**
+
+```yaml
+- name: Install MongoDB
+  dnf:
+    name: mongodb-org
+    state: present
+  tags:
+    - install
+
+- name: Start MongoDB
+  service:
+    name: mongod
+    state: started
+  tags:
+    - start
+```
+
+**Run specific tags:**
+
+```bash
+ansible-playbook main.yaml --tags install
+```
+
+**Run multiple tags:**
+
+```bash
+ansible-playbook main.yaml --tags "install,start"
+```
+
+**Skip specific tags:**
+
+```bash
+ansible-playbook main.yaml --skip-tags install
+```
+
+**Important options:**
+
+- `--tags` – Run tasks with specific tags.
+- `--skip-tags` – Skip tasks with specific tags.
+- `--list-tags` – Display available tags.
+- `--list-tasks` – Display tasks that will run.
+
+**Remember:** Tags help us execute selected tasks without running the entire playbook.
+
+
+
+### Ansible Pip Module – Install Python Dependencies
+
+The **pip module** is used to install Python dependencies required by an application.
+
+**Example:**
+
+```yaml
+- name: Install dependencies
+  pip:                                      # Pip module installs Python packages
+    requirements: /app/requirements.txt     # Read packages from requirements.txt
+    virtualenv: /app/.venv                  # Create and use a Python virtual environment
+    virtualenv_command: python3.14 -m venv  # Use Python 3.14 to create the virtual environment
+```
+
+**Important parameters:**
+
+- `requirements` – Path of the requirements.txt file.
+- `executable` – Pip executable to use.
+- `state` – Specify the required state.
+
+**Remember:** The pip module reads `requirements.txt` and installs the listed Python dependencies on the target server.
+
+
+### Ansible Find Module
+
+The **find module** is used to search for files and directories on the target server.
+
+**Example:**
+
+```yaml
+- name: Find all files and subdirectories inside the target directory
+  ansible.builtin.find:                 # Find module searches for files and directories
+    paths: /usr/share/nginx/html/       # Directory to search for existing content
+    file_type: any                     # Find both files and directories
+    hidden: true                        # Include hidden files and directories
+  register: dir_contents                # Store the search results in dir_contents variable
+```
+
+**Important parameters:**
+
+- `paths` – Directory location to search.
+- `file_type` – Search for files, directories, or both.
+- `hidden` – Include hidden files and directories.
+- `patterns` – Search using file names or patterns.
+- `recurse` – Search inside subdirectories.
+- `register` – Store the task results in a variable.
+
+**Remember:** The find module searches for files and directories and stores the results using `register`.
+
+
+
 
 
