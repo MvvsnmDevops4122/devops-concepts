@@ -684,3 +684,182 @@ Ansible provides two modules to execute commands on remote servers: `shell` and 
 ```
 
 
+### Ansible EC2 Instance Module
+
+The `amazon.aws.ec2_instance` module is used to create, start, stop, and terminate EC2 instances in AWS.
+
+**Example:**
+
+```yaml
+- name: Create EC2 instance
+  amazon.aws.ec2_instance:
+    name: mongodb
+    instance_type: t3.micro
+    image_id: ami-xxxxxxxx
+    state: present
+```
+
+**Important parameters:**
+
+- `name` – EC2 instance name.
+- `instance_type` – EC2 instance type.
+- `image_id` – AMI ID.
+- `state` – Desired EC2 instance state.
+
+**State values:**
+
+- `present` – Create an instance if it does not exist.
+- `running` – Ensure the instance is running.
+- `stopped` – Stop the instance.
+- `absent` – Terminate the instance.
+
+**Remember:** This module helps automate EC2 instance management using Ansible.
+
+### Ansible Route 53 Module
+
+The `amazon.aws.route53` module is used to create, update, and delete DNS records in AWS Route 53.
+
+**Example:**
+
+```yaml
+- name: Create Route 53 DNS record
+  amazon.aws.route53:
+    state: present
+    zone: mvvsnm.online
+    record: mongodb.mvvsnm.online
+    type: A
+    ttl: 1
+    value: 172.31.13.71
+```
+
+**Important parameters:**
+
+- `state` – Create or delete a DNS record.
+- `zone` – Hosted zone name.
+- `record` – DNS record name.
+- `type` – DNS record type (A, CNAME, etc.).
+- `ttl` – Time to Live.
+- `value` – IP address or target value.
+
+**State values:**
+
+- `present` – Create or update a DNS record.
+- `absent` – Delete a DNS record.
+
+**Remember:** This module helps automate DNS record management in AWS Route 53.
+
+
+
+### *Ansible AWS Connection
+
+Ansible connects to AWS using **AWS credentials** to manage AWS resources such as EC2, Route 53, S3, etc.
+
+**Requirements:**
+
+**1. Install AWS Collection**
+
+```bash
+ansible-galaxy collection install amazon.aws
+```
+
+**2. Install AWS Python SDK**
+
+```bash
+pip3 install boto3 botocore
+```
+
+**3. Configure AWS Credentials**
+
+```bash
+aws configure
+```
+
+Provide the following details:
+
+- AWS Access Key
+- AWS Secret Access Key
+- Default Region (e.g., us-east-1)
+- Output format (e.g., json)
+
+**4. Verify AWS Connection**
+
+```bash
+aws sts get-caller-identity
+```
+
+**Remember:** Ansible uses AWS credentials and the `amazon.aws` collection to manage AWS resources.
+
+
+### Ansible Copy Module
+
+The **copy module** is used to copy files from the Ansible Controller to the target server.
+
+**Example:**
+
+```yaml
+- name: Copy MongoDB repo
+  copy:
+    src: mongo.repo       # Source file on Ansible Controller
+    dest: /etc/yum.repos.d/mongo.repo  # Destination on target server
+```
+
+**remote_src:**
+
+- `remote_src: false` (default) – Source file is on the Ansible Controller.
+- `remote_src: true` – Source file is already on the target server.
+
+
+### Ansible Replace Module
+
+The **replace module** is used to find and replace text in a file on the target server.
+
+**Example:**
+
+```yaml
+- name: Replace MongoDB bind IP
+  replace:
+    path: /etc/mongod.conf       # File location
+    regexp: '127.0.0.1'          # Text to find
+    replace: '0.0.0.0'           # Text to replace
+```
+
+**Important parameters:**
+
+- `path` – File location.
+- `regexp` – Text or pattern to find.
+- `replace` – New text to replace with.
+
+**Remember:** The replace module changes matching text in an existing file.
+
+
+### *Ansible Lineinfile Module
+
+The **lineinfile module** is used to add, modify, or remove a specific line in a file on the target server.
+
+**Example:**
+
+```yaml
+- name: Update MongoDB bind IP
+  lineinfile:
+    path: /etc/mongod.conf       # File location
+    regexp: '^#?protected-mode yes' # Find the matching line
+    line: 'protected-mode no'    # Replace with this line
+```
+
+**Important parameters:**
+
+- `path` – File location.
+- `regexp` – Pattern to find an existing line.
+- `line` – New line to add or replace.
+- `state` – Whether the line should be present or absent.
+
+**State values:**
+
+- `present` – Ensure the line exists (default).
+- `absent` – Remove the matching line.
+
+**Remember:** The lineinfile module manages a specific line in a file.
+
+
+
+
