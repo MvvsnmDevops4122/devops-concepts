@@ -103,6 +103,7 @@ Ansible automates the following tasks on all 100 servers:
 4.  `package` → Manages packages across different Linux distributions
     using the appropriate package manager.
 5.  `service` → Ansible module to manage services.
+6.  `user`    → Ansible module to create user.
 
 ## What are Ansible Ad-hoc Commands?
 
@@ -263,6 +264,8 @@ managed nodes before executing playbook tasks.
 
 Ansible variables are used to store values and reuse them dynamically in
 playbooks.
+
+Access variables value using jinja2 expression: `{{ }}`
 
 ### Variable-related keywords
 
@@ -497,3 +500,183 @@ student:
   age: 25
   city: Hyderabad
 ```
+
+# Ansible conditions
+
+Conditions are used to decide whether a task should be **executed or skipped** based on a given condition.
+
+- `when` is the Ansible keyword used to define conditions.
+
+**Refer:** `14-conditions.yaml`
+
+### Example
+
+```yaml
+- name: Check even or odd number
+  debug:
+    msg: "Even number"
+  when: number | int % 2 == 0
+```
+
+# Ansible loops
+
+Loops are used to **execute the same task multiple times** for a list of items.
+
+- `loop` is the Ansible keyword used to define loops.
+- `item` is a special variable used with loops to access each value, one at a time.
+
+### Example
+
+```yaml
+- name: Print fruits
+  debug:
+    msg: "{{ item }}"
+  loop:
+    - Apple
+    - Banana
+    - Orange
+```
+
+**Output:** The task executes three times, printing each fruit one by one.
+
+# Ansible functions
+
+In Ansible, we cannot define custom functions directly in YAML playbooks.
+
+If we need custom functionality, we can write Python code and use it with Ansible.
+
+# Ansible filters
+
+Filters are used to **modify, transform, and manipulate data** in Ansible.
+
+- The pipe symbol (`|`) is used to apply filters.
+
+### Commonly used filters
+
+| Filter | Description |
+|---|---|
+| `split(',')` | Converts a string into a list using a comma as the separator. |
+| `trim` | Removes leading and trailing spaces. |
+| `lower` | Converts a string into lowercase. |
+| `upper` | Converts a string into uppercase. |
+| `join(' ')` | Converts a list into a string, joining the values with a space. |
+
+### Examples
+
+**1. split(',')**
+
+```yaml
+{{ 'apple,banana,orange' | split(',') }}
+```
+
+Output:
+```text
+['apple', 'banana', 'orange']
+```
+
+**2. trim**
+
+```yaml
+{{ '  Hello World  ' | trim }}
+```
+
+Output:
+```text
+Hello World
+```
+
+**3. lower**
+
+```yaml
+{{ 'HELLO WORLD' | lower }}
+```
+
+Output:
+```text
+hello world
+```
+
+**4. upper**
+
+```yaml
+{{ 'hello world' | upper }}
+```
+
+Output:
+```text
+HELLO WORLD
+```
+
+**5. join(' ')**
+
+```yaml
+{{ ['Hello', 'World'] | join(' ') }}
+```
+
+Output:
+```text
+Hello World
+```
+
+# Ansible error handling
+
+Error handling is used to manage task failures during playbook execution.
+
+- **Known errors:** We can handle expected errors using Ansible error-handling methods.
+- **Unknown errors:** We should investigate unexpected errors instead of blindly ignoring them.
+
+### Common keywords
+
+- `ignore_errors`: Allows the playbook to continue executing the next task even if the current task fails.
+-  By default, ignore_errors is false
+- `register`: Stores the output of a task in a variable so that we can use it in subsequent tasks.
+
+### Example
+
+```yaml
+tasks:
+  - name: Check a file
+    command: cat /tmp/demo.txt
+    register: file_output
+    ignore_errors: yes
+
+  - name: Print task output
+    debug:
+      var: file_output
+```
+
+**Refer:** `21-error-handling.yaml`
+
+
+# Ansible shell and command modules
+
+Ansible provides two modules to execute commands on remote servers: `shell` and `command`.
+
+## 1. Shell module
+
+- Executes commands through a remote shell.
+- Supports shell features such as pipes (`|`), redirection (`>`, `>>`), and environment variable expansion.
+- Useful for executing complex commands that require shell features.
+
+**Example:**
+
+```yaml
+- name: Execute shell command
+  shell: "cat /etc/passwd | grep ec2-user"
+```
+
+## 2. Command module
+
+- Executes commands directly on the remote server without invoking a shell.
+- Does not support shell features such as pipes (`|`) and redirections (`>`, `>>`).
+- Does not perform shell variable expansion.
+- Useful for executing simple commands.
+
+**Example:**
+
+```yaml
+- name: Execute command
+  command: whoami
+```
+
+
