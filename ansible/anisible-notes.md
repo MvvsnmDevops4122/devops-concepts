@@ -1161,5 +1161,346 @@ The **find module** is used to search for files and directories on the target se
 
 
 
+### Ansible Roles
+
+- Ansible Roles provide a standard directory structure to organize Ansible playbooks into reusable and  
+  maintainable components.
+
+- Each role has a separate directory structure for tasks, variables, files, templates, and handlers.
+
+- By default ansible loads main.yaml in all the folders.
+
+NOTE:
+
+- Inventory group name must match the component variable.
+- Role directory name must also match the component variable.
+
+**Example:**
+
+```text
+roles/
+  mongodb/
+    tasks/
+      main.yaml
+    handlers/
+    files/
+    templates/
+    vars/
+    defaults/
+    meta/
+```
+
+**Important directories:**
+
+- `tasks/` – Contains tasks to execute.
+- `handlers/` – Contains tasks triggered by notifications.
+- `files/` – Stores static files.
+- `templates/` – Stores Jinja2 template files.
+- `vars/` – Stores role variables.
+- `defaults/` – Stores default variables.
+- `meta/` – Stores role dependencies and metadata.
+
+**Example Playbook:**
+
+```yaml
+- name: Configure MongoDB
+  hosts: mongodb
+  roles:
+    - mongodb
+```
+- roles: – Specifies which roles to execute.
+- mongodb – Name of the role inside the roles/ directory.
+- When you run the playbook, Ansible automatically loads and executes roles/mongodb/tasks/main.yaml.
+
+
+**Create a role:**
+
+```bash
+ansible-galaxy role init mongodb
+```
+
+**Remember:** Roles help us organize, reuse, and maintain Ansible automation code easily.
+
+
+# Ansible Role Structure
+
+An Ansible role is used to organize playbooks into reusable and manageable directories.
+
+## 1. Directory Structure
+
+```text
+roboshop-ansible/
+├── main.yaml
+├── inventory.ini
+├── ansible.cfg
+├── group_vars/
+│   └── all.yaml
+└── roles/
+    ├── common/
+    │   ├── tasks/
+    │   │   └── main.yaml
+    │   ├── handlers/
+    │   │   └── main.yaml
+    │   ├── templates/
+    │   ├── files/
+    │   ├── vars/
+    │   │   └── main.yaml
+    │   ├── defaults/
+    │   │   └── main.yaml
+    │   └── meta/
+    │       └── main.yaml
+    └── shipping/
+        ├── tasks/
+        │   └── main.yaml
+        ├── templates/
+        ├── files/
+        └── meta/
+            └── main.yaml
+```
+
+## 2. Purpose of Each Directory
+
+| Directory | Purpose |
+|---|---|
+| tasks/ | Contains role tasks. |
+| handlers/ | Contains handlers triggered by notifications. |
+| templates/ | Stores Jinja2 template files (.j2). |
+| files/ | Stores static files to copy to target servers. |
+| vars/ | Stores role variables with high precedence. |
+| defaults/ | Stores default variables with low precedence. |
+| meta/ | Stores role metadata and dependencies. |
+
+## 3. Important Files
+
+- `tasks/main.yaml` – Main entry point for role tasks.
+- `defaults/main.yaml` – Stores default variables.
+- `vars/main.yaml` – Stores role variables.
+- `handlers/main.yaml` – Stores handlers.
+- `meta/main.yaml` – Defines role dependencies and metadata.
+
+## 4. Role Execution
+
+**main.yaml**
+
+```yaml
+- name: Configure RoboShop
+  hosts: "{{ component }}"
+  roles:
+    - "{{ component }}"
+```
+
+Run the playbook:
+
+```bash
+ansible-playbook main.yaml -e "component=shipping"
+```
+
+Ansible executes the shipping role.
+
+## 5. Role Dependencies
+
+File: `roles/shipping/meta/main.yaml`
+
+```yaml
+dependencies:
+  - role: common
+```
+
+Execution order:
+
+1. Common role
+2. Shipping role
+
+**Remember:** `tasks/main.yaml` is the entry point for role tasks, and `meta/main.yaml` is used to define role dependencies.
+
+
+### Ansible Vault
+
+Ansible Vault is used to **encrypt and decrypt sensitive data** such as passwords, API keys, and database credentials.
+
+**1. Create an encrypted file**
+
+```bash
+ansible-vault create secrets.yaml
+```
+
+**2. Edit an encrypted file**
+
+```bash
+ansible-vault edit secrets.yaml
+```
+
+**3. Encrypt an existing file**
+
+```bash
+ansible-vault encrypt secrets.yaml
+```
+
+**4. Decrypt a file**
+
+```bash
+ansible-vault decrypt secrets.yaml
+```
+
+**5. View encrypted file contents**
+
+```bash
+ansible-vault view secrets.yaml
+```
+
+**6. Run a playbook using Vault**
+
+```bash
+ansible-playbook main.yaml --ask-vault-pass
+```
+
+**Example:**
+
+```yaml
+# secrets.yaml
+mysql_root_password: "MySecretPassword"
+rabbitmq_password: "MyRabbitPassword"
+```
+
+**Important commands:**
+
+| Command | Purpose |
+|---|---|
+| `create` | Create an encrypted file |
+| `edit` | Edit an encrypted file |
+| `encrypt` | Encrypt an existing file |
+| `decrypt` | Decrypt a file |
+| `view` | View encrypted contents |
+| `rekey` | Change the Vault password |
+
+**Remember:** Ansible Vault protects sensitive information by encrypting it, so passwords are not stored as plain text.
+
+
+### Ansible Vault vs AWS Secrets Manager(Improvement)
+
+**Interview Answer:**
+
+Earlier, we used Ansible Vault to store sensitive information such as passwords. However, managing the Vault password and storing it on the Ansible server was difficult and introduced security risks.
+
+To improve security, we moved to **AWS Secrets Manager** to securely store and retrieve passwords without maintaining the Vault password on the Ansible server.
+
+
+### AWS Secrets Manager
+
+**AWS Secrets Manager** is a managed AWS service (PaaS) used to store confidential information.
+
+**Key Points:**
+
+- Stores secrets as key-value pairs.
+- AWS manages the encryption of sensitive information.
+- Ansible retrieves the required secret values from AWS Secrets Manager.
+- Ansible can use these values in automation playbooks without hardcoding credentials.
+
+**Remember:** AWS Secrets Manager helps securely store and retrieve sensitive information such as passwords and database credentials.
+
+
+# AWS Secrets Manager Setup in Ansible
+
+### 1. Install Required Collections and Packages
+
+```bash
+# Install AWS collection for Secrets Manager lookup
+ansible-galaxy collection install amazon.aws
+
+# Install community.general collection for json_query filter
+ansible-galaxy collection install community.general
+
+# Install required Python packages
+pip3 install boto3 botocore jmespath
+```
+
+### 2. Create a Secret in AWS Secrets Manager
+
+Create a secret with the name:
+
+`roboshop/dev/ansible`
+
+Add the following key-value pairs:
+
+```json
+{
+  "ansible_user": "ec2-user",
+  "ansible_password": "YourSSHPassword",
+  "mysql_root_password": "YourMySQLPassword"
+}
+```
+
+### 3. Configure group_vars/all.yaml
+
+```yaml
+# Retrieve Ansible username from AWS Secrets Manager
+ansible_user: "{{ lookup('amazon.aws.aws_secret', 'roboshop/dev/ansible', region='us-east-1') | from_json | json_query('ansible_user')}}"
+
+# Retrieve Ansible password from AWS Secrets Manager
+ansible_password: "{{ lookup('amazon.aws.aws_secret', 'roboshop/dev/ansible', region='us-east-1') | from_json | json_query('ansible_password')}}"
+
+# Retrieve MySQL root password from AWS Secrets Manager
+mysql_root_password: "{{ lookup('amazon.aws.aws_secret', 'roboshop/dev/ansible', region='us-east-1') | from_json | json_query('mysql_root_password')}}"
+```
+
+### 4. Explanation of Lookup Commands
+
+- `lookup('amazon.aws.aws_secret', ...)` – Retrieves the secret from AWS Secrets Manager.
+- `roboshop/dev/ansible` – Name of the secret.
+- `region='us-east-1'` – AWS region where the secret is stored.
+- `from_json` – Converts the JSON response into Ansible data.
+- `json_query()` – Extracts the required value using its key.
+
+### 5. Run Ansible Playbook
+
+```bash
+# Execute the MySQL component playbook
+ansible-playbook main.yaml -e "component=mysql"
+```
+
+
+# Ansible – Role Dependencies
+
+### What are Role Dependencies?
+
+Role dependencies are used when one role needs another role to execute before it.
+
+- Dependencies are defined in `meta/main.yml`.
+- Ansible automatically executes dependent roles before executing the main role.
+- This avoids repeating common tasks in multiple roles.
+
+### Directory Structure
+
+```text
+roles/
+  shipping/
+    tasks/
+      main.yml
+    meta/
+      main.yml
+  common/
+    tasks/
+      main.yml
+```
+
+### Configure Role Dependency
+
+File: `roles/shipping/meta/main.yml`
+
+```yaml
+dependencies:
+  - role: common
+```
+
+### Execution Flow
+
+1. Ansible starts executing the `shipping` role.
+2. First, it executes the `common` role.
+3. After the `common` role completes, it executes the `shipping` role.
+
+**Remember:** Role dependencies are executed before the role that declares them.
+
+
+
 
 
