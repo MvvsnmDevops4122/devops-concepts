@@ -1544,9 +1544,9 @@ Handlers are tasks that run only when another task notifies them.
 
 ## 1. include_role (Dynamic)
 
-- Loads the role during playbook execution.
-- Ansible loads the role when it reaches the `include_role` task.
-- The role is loaded dynamically during execution.
+- Loads the role during execution time (dynamic).
+- Include role will not parse the playbook before execution.
+- It loads and checks the role dynamically when it reaches the include_role task.
 
 ## 2. import_role (Static)
 
@@ -1562,7 +1562,7 @@ Handlers are tasks that run only when another task notifies them.
 
 ### include_role
 - The condition is checked at the include level.
-- It is not automatically checked again at each task level.
+- It is not automatically checked again at each task level even if values change.
 
 ## 4. Tags
 
@@ -1593,5 +1593,59 @@ Handlers are tasks that run only when another task notifies them.
 - `import_role` – Loads the role statically before execution.
 
 
+
+# Ansible – Dynamic Inventory
+
+### What is Dynamic Inventory?
+
+Dynamic Inventory automatically fetches server details from cloud platforms like AWS instead of maintaining server details manually in an inventory file.
+
+### Static Inventory vs Dynamic Inventory
+
+| Static Inventory | Dynamic Inventory |
+|---|---|
+| Servers are added manually. | Servers are fetched automatically. |
+| IP addresses are maintained manually. | Fetches updated server details from AWS. |
+| Requires manual updates. | Updates inventory dynamically. |
+
+### AWS Dynamic Inventory Setup
+
+**1. Install AWS Collection**
+
+```bash
+# Install AWS collection
+ansible-galaxy collection install amazon.aws
+```
+
+**2. Create Dynamic Inventory File**
+
+File: `inventory.aws_ec2.yaml`
+
+```yaml
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1
+```
+
+**3. Check Inventory**
+
+```bash
+# Display all EC2 instances
+ansible-inventory -i inventory.aws_ec2.yaml --list
+
+# Display inventory in graph format
+ansible-inventory -i inventory.aws_ec2.yaml --graph
+```
+
+**4. Run Playbook**
+
+```bash
+ansible-playbook -i inventory.aws_ec2.yaml main.yaml
+```
+
+### Remember
+
+- Static Inventory – Servers are added manually.
+- Dynamic Inventory – Servers are fetched automatically from AWS.
 
 
