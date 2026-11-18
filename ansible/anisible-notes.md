@@ -1649,3 +1649,103 @@ ansible-playbook -i inventory.aws_ec2.yaml main.yaml
 - Dynamic Inventory – Servers are fetched automatically from AWS.
 
 
+
+# Ansible – Parallelism and Serial
+
+## 1. Parallelism (forks)
+
+**What is Parallelism?**
+
+Parallelism means executing tasks on multiple servers at the same time.
+
+- Ansible uses `forks` to control how many servers it manages simultaneously.
+- Default value is `5`.
+- Configured in `ansible.cfg` or through the command line.
+
+### Example
+
+**ansible.cfg**
+
+```ini
+[defaults]
+forks = 10
+```
+
+**Using Command Line**
+
+```bash
+ansible-playbook main.yaml -f 10
+```
+
+If you have 20 servers and set `forks = 10`, Ansible processes up to 10 servers simultaneously.
+
+## 2. Serial
+
+**What is Serial?**
+
+Serial controls how many servers Ansible processes in one batch.
+
+- Configured inside the playbook.
+- Ansible completes one batch before moving to the next.
+- Useful for deploying applications gradually across servers.
+
+### Example
+
+```yaml
+- name: Deploy application
+  hosts: all
+  serial: 2
+  tasks:
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+```
+
+If you have 6 servers and set `serial: 2`:
+
+1. First batch – 2 servers.
+2. Second batch – 2 servers.
+3. Third batch – 2 servers.
+
+## 3. Difference Between Parallelism and Serial
+
+| Parallelism (forks) | Serial |
+|---|---|
+| Controls simultaneous execution across hosts. | Controls the number of hosts in each batch. |
+| Default value is 5. | No batching by default. |
+| Configured in `ansible.cfg` or CLI. | Configured in the playbook. |
+| Helps control parallel execution. | Helps control gradual deployment. |
+
+## 4. Which One Takes Priority?
+
+Both settings work together.
+
+- `serial` decides how many hosts are in each batch.
+- `forks` decides how many hosts can run tasks simultaneously within that batch.
+
+### Example
+
+```yaml
+- name: Deploy application
+  hosts: all
+  serial: 5
+  tasks:
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+```
+
+If `serial: 5` and `forks: 2`:
+
+- Ansible processes 5 hosts in one batch.
+- It runs tasks on 2 hosts simultaneously.
+- After those hosts finish, it processes the remaining hosts in that batch.
+- Then it moves to the next batch.
+
+**Remember:**
+
+- `forks` – Controls parallel execution.
+- `serial` – Controls batch size.
+- Both work together; neither replaces the other.
