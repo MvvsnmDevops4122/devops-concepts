@@ -1505,6 +1505,9 @@ dependencies:
 
 Handlers are tasks that run only when another task notifies them.
 
+- Handlers are notifiers. when there is a change in particluar task, if we want to notify/inform
+  other task we can use handlers.
+
 - Used to restart or reload services.
 - Run only when changes happen.
 - Usually execute at the end of the play.
@@ -1534,6 +1537,60 @@ Handlers are tasks that run only when another task notifies them.
 
 - `notify` – Triggers a handler.
 - `handlers` – Defines the handler task.
+
+
+
+# Ansible – include_role vs import_role
+
+## 1. include_role (Dynamic)
+
+- Loads the role during playbook execution.
+- Ansible loads the role when it reaches the `include_role` task.
+- The role is loaded dynamically during execution.
+
+## 2. import_role (Static)
+
+- Loads the role before playbook execution.
+- Ansible parses the role before execution.
+- If there is a syntax error, Ansible may stop before executing tasks.
+
+## 3. Conditions (when)
+
+### import_role
+- The `when` condition is applied to every task in the role.
+- Checked before executing each task.
+
+### include_role
+- The condition is checked at the include level.
+- It is not automatically checked again at each task level.
+
+## 4. Tags
+
+### import_role
+- Tags applied at the import level are automatically applied to all role tasks.
+
+### include_role
+- Tags applied at the include level are not automatically applied to role tasks.
+- Tags can be applied at both include level and task level.
+
+## 5. Loops
+
+- `include_role` supports loops.
+- `import_role` does not support loops directly.
+
+## 6. Summary
+
+| Feature | include_role | import_role |
+|---|---|---|
+| Loading | Dynamic | Static |
+| When | Checked at include level | Applied to every task |
+| Tags | Not automatically applied to role tasks | Automatically applied to role tasks |
+| Loops | Supported | Not supported directly |
+| Execution | During execution | Parsed before execution |
+
+**Remember:**
+- `include_role` – Loads the role dynamically during execution.
+- `import_role` – Loads the role statically before execution.
 
 
 
