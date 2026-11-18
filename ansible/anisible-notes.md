@@ -1501,6 +1501,40 @@ dependencies:
 **Remember:** Role dependencies are executed before the role that declares them.
 
 
+# Ansible Handlers
+
+Handlers are tasks that run only when another task notifies them.
+
+- Used to restart or reload services.
+- Run only when changes happen.
+- Usually execute at the end of the play.
+
+## Example
+
+**tasks/main.yaml**
+
+```yaml
+- name: Copy Nginx configuration
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify: Restart Nginx
+```
+
+**handlers/main.yaml**
+
+```yaml
+- name: Restart Nginx
+  service:
+    name: nginx
+    state: restarted
+```
+
+## Remember
+
+- `notify` – Triggers a handler.
+- `handlers` – Defines the handler task.
+
 
 
 
