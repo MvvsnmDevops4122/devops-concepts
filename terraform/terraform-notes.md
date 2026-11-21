@@ -263,6 +263,49 @@ Terraform State helps to:
 
 Terraform variables are used to store values and make Terraform code reusable. Instead of hardcoding values, we define variables in `variables.tf` and assign values through `terraform.tfvars` or command-line options.
 
+##  Types of Terraform Variables/datatypes
+
+Terraform supports different variable types.
+
+| Type | Example |
+|---|---|
+| string | `"t3.micro"` |
+| number | `2` |
+| bool | `true` |
+| list | `["mongodb", "redis"]` |
+| map | `{ dev = "t3.micro", prod = "t3.small" }` |
+| object | `{ name = "web", size = "t3.micro" }` |
+
+Example:
+
+```hcl
+# String variable
+variable "environment" {
+  type    = string
+  default = "dev"
+}
+
+# Number variable
+variable "instance_count" {
+  type    = number
+  default = 2
+}
+
+# Boolean variable
+variable "enable_monitoring" {
+  type    = bool
+  default = true
+}
+```
+
+NOTE: If we use a custom variable file name like dev.tfvars, we need to pass it using terraform plan -var-file="dev.tfvars" or terraform apply -var-file="dev.tfvars".
+
+Remember:
+
+- terraform.tfvars – Automatically loaded.
+- dev.tfvars – Must be specified using -var-file.
+
+
 ##  How to Define Variables?
 
 Create a file named `variables.tf`.
@@ -305,4 +348,150 @@ resource "aws_instance" "web" {
   instance_type = var.instance_type
 }
 ```
+
+##  Assign Values Using terraform.tfvars
+
+Create a file named `terraform.tfvars`.
+
+**terraform.tfvars**
+
+```hcl
+ami_id        = "ami-123456"
+instance_type = "t3.micro"
+```
+
+- Terraform automatically loads values from a file named `terraform.tfvars`.
+- We don't need to specify the file name when executing Terraform commands.
+
+
+##  Assign Values Using Command Line
+
+We can also pass variable values using the `-var` option.
+
+```bash
+# Pass the instance type through the command line
+terraform plan -var="instance_type=t3.small"
+
+# Apply using a variable value
+terraform apply -var="instance_type=t3.small"
+```
+
+# Terraform Environment Variables
+
+Terraform supports environment variables using the `TF_VAR_` prefix.
+
+We can pass variable values through environment variables instead of writing them in `terraform.tfvars`.
+
+## 1. Linux / macOS (Git Bash)
+
+```bash
+# Set Terraform variable
+export TF_VAR_instance_type="t3.small"
+```
+
+## 2. Windows PowerShell
+
+```powershell
+# Set Terraform variable
+$env:TF_VAR_instance_type = "t3.small"
+```
+
+## 3. Windows CMD
+
+```cmd
+:: Set Terraform variable
+set TF_VAR_instance_type=t3.small
+
+unset TF_VAR_instance_type
+```
+
+## 4. Use Variable
+
+**main.tf**
+
+```hcl
+resource "aws_instance" "web" {
+  instance_type = var.instance_type
+}
+```
+
+## 5. Execute Terraform Command
+
+```bash
+# Preview infrastructure changes
+terraform plan
+```
+
+Terraform automatically reads the environment variable and uses `t3.small` instead of the default value `t3.micro`.
+
+
+# How do you pass variables using environment variables in Terraform?**
+
+We can pass variables using the `TF_VAR_` prefix. For example, `export TF_VAR_instance_type="t3.small"` sets the Terraform variable `instance_type` to `t3.small`.
+
+
+# Terraform Variable Validation
+
+Variable validation is used to check whether the given variable value is correct or not.
+
+It helps prevent incorrect values from being used in Terraform.
+
+## Example
+
+**variables.tf**
+
+```hcl
+variable "environment" {
+  default = "dev"
+
+  validation {
+    condition     = contains(["dev", "uat", "prod"], var.environment)
+    error_message = "Environment must be dev, uat, or prod."
+  }
+}
+```
+
+**Explanation:**
+
+- `validation` - Used to validate the variable.
+- `condition` - Checks whether the value is correct.
+- `contains()` - Checks whether the value exists in the list.
+- `error_message` - Displays an error if the condition fails.
+
+**Allowed values:** `dev`, `uat`, `prod`
+
+If we provide `test`, Terraform displays the error message.
+
+
+# Terraform Variable Precedence
+
+If the same variable receives values from multiple sources, Terraform follows a precedence order.
+
+From highest priority to lowest:
+
+1. `-var` and `-var-file` command-line options (command-line order)
+2. `terraform.tfvars` or `terraform.tfvars.json`
+3. Environment variables (`TF_VAR_name`)
+4. Variable default value
+5. prompt
+
+**Example:**
+
+If the same variable has different values:
+
+- Default value = `t3.micro`
+- Environment variable = `t3.small`
+- `terraform.tfvars` = `t3.medium`
+- Command line = `t3.large`
+
+```bash
+terraform plan -var="instance_type=t3.large"
+```
+
+**Final value:** `t3.large`
+
+The command-line value has the highest priority.
+
+Refer: learn-terraform/02-variables
+
 
