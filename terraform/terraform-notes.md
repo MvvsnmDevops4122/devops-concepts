@@ -238,3 +238,71 @@ terraform destroy -auto-approve
 2. **terraform.tfstate.backup** → Stores a backup of the previous state file for recovery if needed.
 
 **Note:** These files are automatically managed by Terraform. Do not manually edit or upload them to a public GitHub repository because they may contain sensitive information.
+
+
+# Why do we use Terraform State?
+
+Imagine we have created the following AWS infrastructure using Terraform:
+
+- 2 EC2 instances
+- 1 Security Group
+- 1 S3 bucket
+
+Terraform stores information about these resources in the state file.
+
+Terraform State helps to:
+
+- Track created infrastructure.
+- Identify existing resources.
+- Understand which resources need to be created, updated, or deleted.
+- Map Terraform configuration resources to real infrastructure resources.
+- Detect infrastructure changes (drift).
+
+
+# Terraform Variables
+
+Terraform variables are used to store values and make Terraform code reusable. Instead of hardcoding values, we define variables in `variables.tf` and assign values through `terraform.tfvars` or command-line options.
+
+##  How to Define Variables?
+
+Create a file named `variables.tf`.
+
+**variables.tf**
+
+```hcl
+# Variable for EC2 AMI ID
+variable "ami_id" {
+  default = "ami-123456"
+}
+
+# Variable for EC2 instance type
+variable "instance_type" {
+  default = "t3.micro"
+}
+```
+
+Explanation:
+
+- `variable` - Keyword used to define a variable.
+- `"ami_id"` - Variable name.
+- `default` - Default value assigned to the variable.
+
+##  How to Use Variables?
+
+Create a file named `main.tf`.
+
+**main.tf**
+
+```hcl
+# AWS provider configuration
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Create an EC2 instance
+resource "aws_instance" "web" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+}
+```
+
