@@ -455,7 +455,7 @@ variable "environment" {
 
 - `validation` - Used to validate the variable.
 - `condition` - Checks whether the value is correct.
-- `contains()` - Checks whether the value exists in the list.
+- `contains()` is a Terraform function that checks whether a given value exists in a list.
 - `error_message` - Displays an error if the condition fails.
 
 **Allowed values:** `dev`, `uat`, `prod`
@@ -493,5 +493,223 @@ terraform plan -var="instance_type=t3.large"
 The command-line value has the highest priority.
 
 Refer: learn-terraform/02-variables
+
+
+# Terraform Condition
+
+A condition is used to check whether an expression is true or false.
+
+In Terraform, conditional expressions allow us to select one value or another based on a condition.
+
+## Syntax
+
+```hcl
+condition ? true_value : false_value
+```
+
+## Example
+
+**main.tf**
+
+```hcl
+variable "environment" {
+  default = "dev"
+}
+
+resource "aws_instance" "web" {
+  ami = "ami-123456"
+
+  instance_type = var.environment == "prod" ? "t3.medium" : "t3.micro"
+}
+```
+
+**Explanation:**
+
+- `==` checks whether two values are equal.
+- `?` means if the condition is true.
+- `:` means if the condition is false.
+
+**Output:**
+
+- If environment is `prod`, instance type is `t3.medium`.
+- Otherwise, instance type is `t3.micro`.
+
+# Terraform Loops
+
+Loops are used to create multiple resources without writing the same code again and again.
+
+In Terraform, we use `count` and `for_each` to create multiple resources.
+
+## Count-Based Loop
+
+`count` is a meta-argument used to create multiple instances of a resource.
+
+### Example
+
+```hcl
+resource "aws_instance" "web" {
+  count         = 3
+  ami           = "ami-123456"
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "web-${count.index}"
+  }
+}
+```
+
+### Output
+
+Terraform creates 3 EC2 instances:
+
+| Resource | Name |
+|---|---|
+| `aws_instance.web[0]` | web-0 |
+| `aws_instance.web[1]` | web-1 |
+| `aws_instance.web[2]` | web-2 |
+
+### Explanation
+
+- `count = 3` → Creates 3 EC2 instances.
+- `count.index` → Gives the index number of each resource, starting from 0.
+- `count.index` automatically increases for each resource (0, 1, 2).
+- Resource names will be `web-0`, `web-1`, and `web-2`.
+
+---
+
+## Interpolation in Terraform
+
+Interpolation in Terraform means inserting a variable or expression inside a string.
+
+Terraform uses `${}` syntax for interpolation.
+
+### Example
+
+```hcl
+# Define an environment variable
+variable "environment" {
+  default = "dev"
+}
+
+# Create 2 EC2 instances
+resource "aws_instance" "web" {
+  count = 2
+
+  # Assign a unique name to each EC2 instance
+  tags = {
+    Name = "web-${var.environment}-${count.index}"
+  }
+}
+```
+
+### Output
+
+Terraform generates the following EC2 instance names:
+
+```text
+web-dev-0
+web-dev-1
+```
+
+### Explanation
+
+- `${var.environment}` → Inserts the variable value (`dev`).
+- `${count.index}` → Inserts the current resource index number (0, 1).
+
+**Remember:**
+
+- `count` → Specifies how many resources Terraform should create.
+- `count.index` → Gives the index number of each resource.
+- `${}` → Used to insert variables or expressions inside strings.
+
+
+## Terraform Output
+
+- **Output** blocks are used to display useful information about resources after Terraform execution.
+- We can use output values to retrieve resource details such as EC2 instance ID, public IP, private IP, and DNS name.
+
+### Example (outputs.tf)
+
+```hcl
+# Display EC2 instance ID
+output "instance_id" {
+  value = aws_instance.roboshop.id
+}
+
+# Display EC2 public IP
+output "public_ip" {
+  value = aws_instance.roboshop.public_ip
+}
+
+# Display EC2 private IP
+output "private_ip" {
+  value = aws_instance.roboshop.private_ip
+}
+```
+
+### Commands
+
+```bash
+terraform apply   # Create infrastructure and display output values
+terraform output  # Display all output values
+```
+
+## Terraform Functions
+
+- In Terraform, we cannot define our own custom functions. We can use built-in Terraform functions.
+- Functions take input values, perform an operation, and return an output value.
+- Functions help us work with strings, numbers, lists, maps, and other data.
+
+### Function Syntax
+
+```hcl
+function_name(input)  # Returns output
+```
+
+### 1. length()
+
+- `length()` calculates the number of items in a list or characters in a string.
+
+**Example:**
+
+```hcl
+length(["apple", "banana", "pomo", "guava", "grapes"])
+
+# Output: 5
+```
+
+### 2. contains()
+
+- `contains()` checks whether a given value exists in a list.
+- Returns `true` if the value exists; otherwise, returns `false`.
+
+**Example:**
+
+```hcl
+fruits = ["apple", "banana", "pomo", "guava", "grapes"]
+
+contains(fruits, "watermelon")  # Output: false
+contains(fruits, "pomo")        # Output: true
+```
+
+### 3. index()
+
+- `index()` returns the position (index number) of a given value in a list.
+- Index numbering starts from `0`.
+- If the value does not exist, Terraform returns an error.
+
+**Example:**
+
+```hcl
+fruits = ["apple", "banana", "pomo", "guava", "grapes"]
+
+index(fruits, "banana")  # Output: 1
+index(fruits, "berries") # Error: Value not found
+```
+
+**Simple Understanding:** Terraform functions take input, perform an operation, and return an output.
+
+
+
 
 
