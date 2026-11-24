@@ -72,3 +72,50 @@ Terraform automatically identifies dependencies between resources and creates th
 ## 6. CRUD Operations
 
 Terraform supports Create, Read, Update, and Delete operations to manage infrastructure resources.
+
+# Terraform Provider
+
+- In Terraform, a **Provider** is a plugin that allows Terraform to communicate with cloud platforms and manage their infrastructure.
+
+- The Terraform AWS Provider communicates with AWS by calling AWS APIs to create, read, update, and delete resources.
+
+- Before creating infrastructure, we need to configure AWS credentials. We can configure them using the AWS CLI. Then, we configure the required provider in Terraform.
+
+### Examples
+
+- **AWS Provider** → Communicates with AWS and manages its resources.
+- **Azure Provider** → Communicates with Microsoft Azure and manages its resources.
+- **Google Cloud Provider** → Communicates with Google Cloud and manages its resources.
+
+### Example: AWS Provider
+
+Create a file named `providers.tf`.
+
+```hcl
+# Configure AWS Provider
+provider "aws" {
+  region = "us-east-1"
+}
+```
+
+### Explanation
+
+- `provider` → Terraform block used to configure a provider.
+- `"aws"` → Provider name.
+- `region` → AWS region where you want to create resources.
+- `"us-east-1"` → N. Virginia region.
+
+## Installing the AWS Provider Plugin
+
+```bash
+# Initialize the Terraform working directory
+# Download the required provider plugins
+terraform init
+```
+
+**Note:** `terraform init` downloads the required provider plugins based on the provider configuration in your Terraform files (e.g., `providers.tf`).
+
+After running `terraform init`, Terraform automatically creates the following:
+
+1. **`.terraform/` directory** → Stores the downloaded provider plugins and other initialization files.
+2. **`.terraform.lock.hcl` file** → Records the selected provider versions and checksums to ensure consistent provider versions across future runs.
