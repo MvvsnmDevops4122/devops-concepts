@@ -6,7 +6,7 @@ In Terraform, we use `count` and `for_each` to create multiple instances of a re
 
 ## Count-Based Loop
 
-`count` is a meta-argument used to create multiple resources without writing the same code again and again.
+`count` is a meta-argument used to create multiple resources by looping through each item in a list.
 
 - We can use `count` with a number to specify how many resources to create.
 - We can use `count` with a list to loop through each item using its index (`count.index`).
@@ -135,3 +135,53 @@ resource "aws_instance" "web" {
 - List indexing starts from `0`.
 - `count.index` selects the corresponding list item.
 - `length()` returns the total number of items in a list.
+
+
+# Terraform for_each Loop
+
+`for_each` is a meta-argument used to create multiple resources by looping through each item in a map 
+
+- We can use `for_each` with a map or set of strings.
+- Terraform provides a special variable called `each` to identify the current item.
+- `each.key` → Gives the current key.
+- `each.value` → Gives the current value.
+
+## Example: for_each Loop
+
+```hcl
+variable "instances" {
+  default = {
+    mongodb = "t3.micro"
+    redis   = "t3.small"
+    mysql   = "t3.micro"
+  }
+}
+
+resource "aws_instance" "web" {
+  for_each      = var.instances
+  ami           = "ami-123456"
+  instance_type = each.value
+
+  tags = {
+    Name = each.key
+  }
+}
+```
+
+## Output
+
+Terraform creates 3 EC2 instances:
+
+| Resource | Instance Type | Name |
+|---|---|---|
+| `aws_instance.web["mongodb"]` | t3.micro | mongodb |
+| `aws_instance.web["redis"]` | t3.small | redis |
+| `aws_instance.web["mysql"]` | t3.micro | mysql |
+
+## Explanation
+
+- `for_each` → Loops through each item in the map.
+- `each.key` → Gets the current key (`mongodb`, `redis`, `mysql`).
+- `each.value` → Gets the current value (`t3.micro`, `t3.small`, `t3.micro`).
+- Each map item creates one EC2 instance.
+
