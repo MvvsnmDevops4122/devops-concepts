@@ -27,3 +27,19 @@ Imagine you want to create the following AWS infrastructure:
 You can create these resources manually in the AWS Console, but it takes time.
 
 Using Terraform, you can define all the required resources in configuration files and create the infrastructure automatically.
+
+## What is Terraform?
+
+- Terraform is a **declarative Infrastructure as Code (IaC) tool**.
+
+- Terraform maintains a **State File**, which acts like memory. It keeps track of the infrastructure Terraform has already created and manages.
+
+- Terraform compares the **Desired State** (what we want) with the **Current State** (what currently exists) and identifies the changes required.
+
+- It is used to create, manage, update, and delete infrastructure automatically using code instead of creating resources manually through the cloud console.
+
+- Terraform is developed by **HashiCorp**.
+
+- Terraform is **platform independent**. It supports multiple cloud providers and infrastructure platforms.
+
+- `.tf` → Terraform file extension. Files with this extension are called **Terraform configuration files**.
