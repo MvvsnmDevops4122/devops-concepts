@@ -119,3 +119,72 @@ After running `terraform init`, Terraform automatically creates the following:
 
 1. **`.terraform/` directory** → Stores the downloaded provider plugins and other initialization files.
 2. **`.terraform.lock.hcl` file** → Records the selected provider versions and checksums to ensure consistent provider versions across future runs.
+
+
+## HCL (HashiCorp Configuration Language)
+
+- HCL stands for **HashiCorp Configuration Language**.
+- HCL is the configuration language used to write Terraform code.
+- Terraform uses blocks and arguments to define infrastructure configurations.
+- Most Terraform configurations use curly braces `{ }` to define blocks.
+
+### Basic Syntax
+
+```hcl
+<type-of-block> "label" {
+  key = "value"
+}
+```
+
+### Types of Terraform Blocks
+
+1. **Resource** – Creates and manages infrastructure resources.
+2. **Variable** – Defines input variables.
+3. **Provider** – Configures the cloud provider.
+4. **Output** – Displays information after Terraform execution.
+
+**Examples of AWS Resources:**
+
+EC2, S3, VPC, Security Group, Load Balancer, RDS, EBS.
+
+## Resource Block
+
+### Syntax
+
+```hcl
+resource "<resource-type>" "<resource-name>" {
+  key = value
+}
+```
+
+### Example
+
+```hcl
+resource "aws_instance" "roboshop-mongodb" {
+  ami           = "ami-1234"
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "roboshop-mongodb"
+  }
+}
+```
+
+### Explanation
+
+- `resource` → Block type.
+- `{ }` → Block body, where we define resource configuration.
+- `"aws_instance"` → Resource type (AWS EC2 instance).
+- `"roboshop-mongodb"` → Resource label (name used to identify the resource in Terraform code).
+- `ami` → Specifies the AMI ID used to launch the EC2 instance.
+- `instance_type` → Specifies the EC2 instance type.
+- `tags` → Used to assign tags to the EC2 instance.
+- `Name` → Tag key.
+- `"roboshop-mongodb"` → Tag value (name displayed in the AWS Console).
+
+**Important Difference:**
+
+- **Terraform Resource Name:** `roboshop-mongodb` (used inside Terraform code).
+- **AWS Resource Name:** `roboshop-mongodb` (displayed in the AWS Console through the `Name` tag).
+
+The Terraform resource label and AWS Name tag can have different values.
