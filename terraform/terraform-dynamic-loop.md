@@ -5,6 +5,8 @@
 - A dynamic block is used to create multiple nested blocks inside a resource without writing the same block multiple times.
 - It helps reduce duplicate code and makes Terraform configuration easier to maintain.
 
+- Dynamic block uses a for_each loop to generate multiple nested blocks.
+
 **Meaning of Nested Block:** A nested block is a block written inside another block.
 
 For example, `ingress` is a nested block inside the `aws_security_group` resource.
