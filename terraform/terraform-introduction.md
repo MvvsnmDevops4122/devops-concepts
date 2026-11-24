@@ -43,3 +43,32 @@ Using Terraform, you can define all the required resources in configuration file
 - Terraform is **platform independent**. It supports multiple cloud providers and infrastructure platforms.
 
 - `.tf` → Terraform file extension. Files with this extension are called **Terraform configuration files**.
+
+
+# Advantages of Terraform / Infrastructure as Code (IaC)
+
+## 1. State Management
+
+Terraform maintains a State File (`terraform.tfstate`) to track the infrastructure resources it manages.
+
+It compares the current state with the desired configuration and identifies the changes required.
+
+## 2. Declarative Approach
+
+We define the desired infrastructure, and Terraform identifies what actions are required to achieve it (create, update, or delete).
+
+## 3. Consistent Infrastructure
+
+We can create the same infrastructure across DEV, QA, UAT, and PROD environments, reducing environment-related issues.
+
+## 4. Reusable Infrastructure
+
+Using Terraform Modules, we can reuse the same infrastructure code across different projects and environments.
+
+## 5. Dependency Management
+
+Terraform automatically identifies dependencies between resources and creates them in the correct order.
+
+## 6. CRUD Operations
+
+Terraform supports Create, Read, Update, and Delete operations to manage infrastructure resources.
