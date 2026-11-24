@@ -228,28 +228,10 @@ If the same variable receives values from multiple sources, Terraform follows a 
 From highest priority to lowest:
 
 1. **Command-line options** → `-var` and `-var-file`
-2. **Auto-loaded variable files** → `*.auto.tfvars` and `*.auto.tfvars.json`
-3. **terraform.tfvars files** → `terraform.tfvars` and `terraform.tfvars.json`
-4. **Environment variables** → `TF_VAR_name`
-5. **Default value** → Value defined inside the variable block
+2. **terraform.tfvars files** → `terraform.tfvars` and `terraform.tfvars.json`
+3. **Environment variables** → `TF_VAR_name`
+4. **Default value** → Value defined inside the variable block
+5. **Prompt**
 
 **Note:** If no value or default is provided for a required variable, Terraform prompts us to enter a value when running interactively.
 
-### Example
-
-If the same variable has different values:
-
-- Default value = `t3.micro`
-- Environment variable = `t3.small`
-- `terraform.tfvars` = `t3.medium`
-- Command line = `t3.large`
-
-```bash
-terraform plan -var="instance_type=t3.large"
-```
-
-**Final value:** `t3.large`
-
-The command-line value has the highest priority.
-
-**Reference:** `learn-terraform/02-variables`
