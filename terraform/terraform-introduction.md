@@ -181,3 +181,38 @@ resource "aws_instance" "roboshop-mongodb" {
 - `tags` → Used to assign tags to the EC2 instance.
 - `Name` → Tag key.
 - `"roboshop-mongodb"` → Tag value (name displayed in the AWS Console).
+
+
+# Terraform State Files
+
+- Terraform State is a file that stores information about the infrastructure managed by Terraform.
+
+- It helps Terraform compare the desired configuration with the current state, track existing resources, and identify what needs to be created, updated, or deleted.
+
+- By default, Terraform stores the state locally in a file named `terraform.tfstate`.
+
+### State Files Created by Terraform
+
+After running `terraform apply` for the first time, Terraform creates the following files:
+
+1. **`terraform.tfstate`** → Stores the current state of infrastructure managed by Terraform.
+
+2. **`terraform.tfstate.backup`** → Stores a backup of the previous state file when Terraform updates the state.
+
+**Note:** These files are automatically managed by Terraform. Do not manually edit or upload them to a public GitHub repository because they may contain sensitive information.
+
+# Why Do We Use Terraform State?
+
+Imagine we have created the following AWS infrastructure using Terraform:
+
+- 2 EC2 instances
+- 1 Security Group
+- 1 S3 bucket
+
+Terraform stores information about these resources in the state file.
+
+Terraform State helps to:
+
+- Track infrastructure resources managed by Terraform.
+- Identify existing resources.
+- Understand which resources need to be created, updated, or deleted.
