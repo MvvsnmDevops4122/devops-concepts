@@ -808,6 +808,201 @@ index(fruits, "berries") # Error: Value not found
 
 Refer: learn-terraform/05-functions
 
+### 4. lookup()
+
+- lookup() function is used to retrieve a value from a map using its key.
+
+- lookup(map, key, default)
+
+```hcl
+variable "instance_types" {
+  default = {
+    mongodb   = "t3.micro"
+    catalogue = "t3.small"
+    redis     = "t3.micro"
+  }
+}
+
+output "instance_type" {
+  value = lookup(var.instance_types, "mongodb", "t2.micro")
+}
+```
+
+# **Terraform Functions – Quick Revision Notes**
+
+## 5. merge()
+
+Combines two or more maps or objects into a single map or object.
+
+**Syntax:**
+
+```
+merge(map1, map2, ...)
+```
+
+**Example:**
+
+```
+output "result" {
+  value = merge(
+    {
+      Environment = "dev"
+      Owner       = "admin"
+    },
+    {
+      Environment = "prod"
+      Project     = "roboshop"
+    }
+  )
+}
+```
+
+**Output:**
+
+```
+{
+  Environment = "prod"
+  Owner       = "admin"
+  Project     = "roboshop"
+}
+```
+
+**Remember:** If the same key exists in multiple maps, the value from the last map takes precedence.
+
+## 6. split()
+
+Splits a string into a list of strings using the specified separator.
+
+**Syntax:**
+
+```
+split(separator, string)
+```
+
+**Example:**
+
+```
+output "result" {
+  value = split("-", "roboshop-mongodb-dev")
+}
+```
+
+**Output:**
+
+```
+["roboshop", "mongodb", "dev"]
+```
+
+**Remember:** `split()` = String → List.
+
+## 7. join()
+
+Combines the elements of a list into a single string using the specified separator.
+
+**Syntax:**
+
+```
+join(separator, list)
+```
+
+**Example:**
+
+```
+output "result" {
+  value = join("-", ["roboshop", "mongodb", "dev"])
+}
+```
+
+**Output:**
+
+```
+"roboshop-mongodb-dev"
+```
+
+**Remember:** `join()` = List → String.
+
+## 8. startswith()
+
+Checks whether a string begins with the specified prefix. Returns `true` or `false`.
+
+**Syntax:**
+
+```
+startswith(string, prefix)
+```
+
+**Example:**
+
+```
+startswith("roboshop-mongodb", "roboshop")
+```
+
+**Output:**
+
+```
+true
+```
+
+## 9. endswith()
+
+Checks whether a string ends with the specified suffix. Returns `true` or `false`.
+
+**Syntax:**
+
+```
+endswith(string, suffix)
+```
+
+**Example:**
+
+```
+endswith("roboshop-mongodb", "mongodb")
+```
+
+**Output:**
+
+```
+true
+```
+
+## 10. max()
+
+Returns the largest number from the given numeric arguments.
+
+**Syntax:**
+
+```
+max(number1, number2, ...)
+```
+
+**Example:**
+
+```
+max(10, 20, 30, 5)
+```
+
+**Output:**
+
+```
+30
+```
+
+## 11. min()
+
+Returns the smallest number from the given numeric arguments.
+
+**Syntax:**
+
+```
+min(number1, number2, ...)
+```
+
+**Example:**
+
+```
+min(10, 20, 30, 5)
+```
+
 # Terraform for_each Loop
 
 - We can use `for_each` with a map 
@@ -815,6 +1010,7 @@ Refer: learn-terraform/05-functions
 - Terraform provides a special variable called `each` to identify the current item.
 - `each.key` → Gives the current key.
 - `each.value` → Gives the current value.
+
 
 ## Example: for_each Loop
 
